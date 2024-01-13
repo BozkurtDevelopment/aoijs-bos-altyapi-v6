@@ -12,7 +12,8 @@ const config = {
 }
 const { token, prefix, dbpasscode } = config; 
 
-const { AoiClient, Util } = require("aoi.js");
+const { AoiClient, Util } = require('aoi.js');
+const { Handler, Functions } = require('aoi.tools')
 const { setup } = require('@akarui/aoi.parser')
 const database = require('@akarui/aoi.db')
 const loader = require('./classes/loader')
@@ -44,9 +45,10 @@ const client = new AoiClient({
     }
   })
 
-// LOADERS
-client.loadCommands('./src/commands', true)
-client.loadCommands('./src/events', true)
-loader.loadStatus(client)
-loader.loadFunctions(client)
-loader.loadVariables(client)
+const { Handler } = require('aoi.tools')
+
+const handler = new Handler(client)
+.loadCommands('./commands', { main: "$onlyIf[$getGlobalUserVar[blacklisted;$authorID]==false;You are blacklisted!]" })
+.loadVariables('./variables')
+.loadStatus('./status')
+.loadFunctions('./functions');
